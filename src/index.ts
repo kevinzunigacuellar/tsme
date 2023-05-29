@@ -48,9 +48,44 @@ try {
 
 // type assertion shorthand
 const map = new Map<string, number>();
-
 map.set("foo", 1);
-
 const b = map.get("foo")!; // Ok
-
 b.toFixed(2); // Ok
+
+// generics
+function identity<T>(input: T) {
+	return input;
+}
+
+const myString = identity("me"); // Type: "me"
+const myNumber = identity(123); // Type: 123
+const myBoolean = identity(true); // Type: true
+
+//
+function logWrapper<Input>(callback: (input: Input) => void) {
+	return (input: Input) => {
+		console.log("Input:", input);
+		callback(input);
+	};
+}
+
+// Type: (input: string) => void
+logWrapper((input: string) => {
+	console.log(input.length);
+});
+// Type: (input: string) => void
+logWrapper<string>((input) => {
+	console.log(input.length);
+});
+
+// Type: (input: unknown) => void
+logWrapper((input) => {
+	// console.log(input.length);
+	// Error: Property 'length' does not exist on type 'unknown'.
+});
+
+function makeTuple<First, Second>(first: First, second: Second) {
+	return [first, second] as const;
+}
+
+let tuple = makeTuple(true, "abc"); // Type of value: readonly [boolean, string]
